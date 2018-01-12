@@ -4,7 +4,8 @@
   "description": "A stream model for Taf protocol",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "standard && mocha test",
+    "coverage": "istanbul cover _mocha"
   },
   "repository": {
     "type": "git",
@@ -16,8 +17,13 @@
   ],
   "author": "maizhiying",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/dafeizizhu/t-model/issues"
+  "devDependencies": {
+    "istanbul": "^0.4.5",
+    "mocha": "^4.0.1",
+    "standard": "^10.0.3"
   },
-  "homepage": "https://github.com/dafeizizhu/t-model#readme"
+  "dependencies": {
+    "md5": "^2.2.1",
+    "uuid": "^3.1.0"
+  }
 }
