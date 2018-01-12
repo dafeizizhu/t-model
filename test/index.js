@@ -4,12 +4,12 @@ const assert = require('assert')
 const util = require('util')
 const md5 = require('md5')
 
-const TStream = require('../index')
+const TModel = require('../index')
 
 const randomInt = e => Math.floor(Math.random() * Math.pow(2, e) - Math.pow(2, e - 1))
 const randomUInt = e => Math.floor(Math.random() * (Math.pow(2, e) - 1))
-const randomFloat = () => (Math.random() * 6.8e38 - 3.4e38).toPrecision(TStream.TFloat.PRECISION)
-const randomDouble = () => (Math.random() * Number.MAX_VALUE - Number.MAX_VALUE / 2).toPrecision(TStream.TFloat.PRECISION)
+const randomFloat = () => (Math.random() * 6.8e38 - 3.4e38).toPrecision(TModel.TFloat.PRECISION)
+const randomDouble = () => (Math.random() * Number.MAX_VALUE - Number.MAX_VALUE / 2).toPrecision(TModel.TFloat.PRECISION)
 const randomString = length => {
   let ret = Math.random().toString(36).substr(2)
   while (ret.length < length) {
@@ -18,20 +18,20 @@ const randomString = length => {
   return ret
 }
 
-class DemoStruct extends TStream.TStruct {
+class DemoStruct extends TModel.TStruct {
   static parse (value) {
     return Object.assign({}, { i: 0, str: '' }, value)
   }
   static readFrom (is, tBuffer) {
-    let i = TStream.TInt32.read(is, 0, true)
-    let str = TStream.TString.read(is, 1, true)
+    let i = TModel.TInt32.read(is, 0, true)
+    let str = TModel.TString.read(is, 1, true)
     return new DemoStruct({ i, str }).valueOf()
   }
   constructor (value) {
     super(value)
 
-    this.t_i = new TStream.TInt32(this._value.i)
-    this.t_str = new TStream.TString(this._value.str)
+    this.t_i = new TModel.TInt32(this._value.i)
+    this.t_str = new TModel.TString(this._value.str)
   }
   writeTo (os, tBuffer) {
     this.t_i.write(os, 0)
@@ -50,13 +50,13 @@ class DemoStruct extends TStream.TStruct {
 
 describe('dev', () => {
   const normal = (write, read, invalidValues, values, defaultValues) => {
-    let os = new TStream.TOutputStream()
+    let os = new TModel.TOutputStream()
     tags.forEach((tag, i) => {
       if (requires[i]) {
         write.call(os, tag, values[i])
       }
     })
-    let is = new TStream.TInputStream(os.tBuffer)
+    let is = new TModel.TInputStream(os.tBuffer)
     tags.forEach((tag, i) => {
       if (i % 2 === 0) {
         let actual = read.call(is, tag, requires[i], defaultValues[i])
@@ -65,7 +65,7 @@ describe('dev', () => {
       }
     })
 
-    is = new TStream.TInputStream(os.tBuffer)
+    is = new TModel.TInputStream(os.tBuffer)
     tags.forEach((tag, i) => {
       if (!requires[i]) {
         assert.throws(() => read.call(is, tag, true))
@@ -164,7 +164,7 @@ describe('dev', () => {
     writeFloat,
     writeDouble,
     writeString
-  } = TStream.TOutputStream.prototype
+  } = TModel.TOutputStream.prototype
   const {
     readBool,
     readInt8,
@@ -177,7 +177,7 @@ describe('dev', () => {
     readFloat,
     readDouble,
     readString
-  } = TStream.TInputStream.prototype
+  } = TModel.TInputStream.prototype
 
   it('bool', () => normal(writeBool, readBool, boolInvalidValues, boolValues, boolDefaultValues))
   it('int8', () => normal(writeInt8, readInt8, int8InvalidValues, int8Values, int8DefaultValues))
@@ -191,7 +191,7 @@ describe('dev', () => {
   it('double', () => normal(writeDouble, readDouble, doubleInvalidValues, doubleValues, doubleDefaultValues))
   it('string', () => normal(writeString, readString, stringInvalidValues, stringValues, stringDefaultValues))
   it('list', () => {
-    const { TInt8, TInt16, TInt32, TInt64, TUInt8, TUInt16, TUInt32, TFloat, TDouble, TString, TList, TMap } = TStream
+    const { TInt8, TInt16, TInt32, TInt64, TUInt8, TUInt16, TUInt32, TFloat, TDouble, TString, TList, TMap } = TModel
     const ItemPrototypes = [TInt8, TInt16, TInt32, TInt64, TUInt8, TUInt16, TUInt32, TFloat, TDouble, TString, TList(TInt8), TMap(TString, TInt8), DemoStruct]
     const vectorValues = [
       int8Values,
@@ -213,7 +213,7 @@ describe('dev', () => {
       structValues
     ]
 
-    let os = new TStream.TOutputStream()
+    let os = new TModel.TOutputStream()
     let tag = 0
     ItemPrototypes.forEach((ItemPrototype, index) => {
       let vectorValue = vectorValues[index]
@@ -223,7 +223,7 @@ describe('dev', () => {
       os.writeList(tag + 1, listValue)
       tag += 4
     })
-    let is = new TStream.TInputStream(os.tBuffer)
+    let is = new TModel.TInputStream(os.tBuffer)
     tag = 0
     ItemPrototypes.forEach((ItemPrototype, index) => {
       let listValueRequire = is.readList(tag + 1, true, TList(ItemPrototype), 'default Value')
@@ -236,7 +236,7 @@ describe('dev', () => {
   })
   it('map', () => {
     const t = (start, end, startV, endV) => {
-      const { TInt8, TInt16, TInt32, TInt64, TUInt8, TUInt16, TUInt32, TFloat, TDouble, TString, TList, TMap } = TStream
+      const { TInt8, TInt16, TInt32, TInt64, TUInt8, TUInt16, TUInt32, TFloat, TDouble, TString, TList, TMap } = TModel
       const KeyPrototypes = ([TInt8, TInt16, TInt32, TInt64, TUInt8, TUInt16, TUInt32, TFloat, TDouble, TString, TList(TInt8), TMap(TString, TInt8), DemoStruct]).slice(start, end)
       const ValuePrototypes = ([TInt8, TInt16, TInt32, TInt64, TUInt8, TUInt16, TUInt32, TFloat, TDouble, TString, TList(TInt8), TMap(TString, TInt8), DemoStruct]).slice(startV, endV)
 
@@ -282,7 +282,7 @@ describe('dev', () => {
         })
       })
 
-      let os = new TStream.TOutputStream()
+      let os = new TModel.TOutputStream()
       let tag = 0
       testCases.forEach(({ map }) => {
         os.writeMap(tag, map)
@@ -290,7 +290,7 @@ describe('dev', () => {
         tag += 4
       })
       tag = 0
-      let is = new TStream.TInputStream(os.tBuffer)
+      let is = new TModel.TInputStream(os.tBuffer)
       testCases.forEach(({ map, KeyPrototype, ValuePrototype }) => {
         let mapValueRequire = is.readMap(tag + 1, true, TMap(KeyPrototype, ValuePrototype), 'default Value')
         let mapValueOptionalNotExist = is.readMap(tag + 2, false, TMap(KeyPrototype, ValuePrototype), 'default Value')
@@ -304,13 +304,13 @@ describe('dev', () => {
     t(7, 14, 7, 14)
   }).timeout(10000)
   it('struct', () => {
-    let os = new TStream.TOutputStream()
+    let os = new TModel.TOutputStream()
     structValues.forEach((v, index) => {
       if (index % 3 === 0) {
         os.writeStruct(index, v, DemoStruct)
       }
     })
-    let is = new TStream.TInputStream(os.tBuffer)
+    let is = new TModel.TInputStream(os.tBuffer)
     structValues.forEach((v, index) => {
       if (index % 2 === 0) {
         let isRequire = (index % 3 === 0)
@@ -321,8 +321,8 @@ describe('dev', () => {
     })
   })
   it('bytes', () => {
-    let { TBytes } = TStream
-    let os = new TStream.TOutputStream()
+    let { TBytes } = TModel
+    let os = new TModel.TOutputStream()
     let bytesValues = [Buffer.from(int8Values), Buffer.from(int16Values), Buffer.from(int32Values)]
     let tag = 0
     bytesValues.forEach(bytesValue => {
@@ -331,7 +331,7 @@ describe('dev', () => {
       tag += 4
     })
     tag = 0
-    let is = new TStream.TInputStream(os.tBuffer)
+    let is = new TModel.TInputStream(os.tBuffer)
     bytesValues.forEach(bytesValue => {
       let bytesValueRequire = TBytes.read(is, tag + 1, true, 'default value')
       let bytesValueOptionalNotExist = TBytes.read(is, tag + 2, false, 'default value')
