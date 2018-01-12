@@ -1,0 +1,23 @@
+{
+  "name": "t-model",
+  "version": "1.0.0",
+  "description": "A stream model for Taf protocol",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dafeizizhu/t-model.git"
+  },
+  "keywords": [
+    "taf",
+    "stream"
+  ],
+  "author": "maizhiying",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dafeizizhu/t-model/issues"
+  },
+  "homepage": "https://github.com/dafeizizhu/t-model#readme"
+}
