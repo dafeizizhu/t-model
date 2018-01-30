@@ -105,7 +105,7 @@ describe('dev', () => {
   })
   let int32DefaultValues = tags.map(tag => randomInt(32))
 
-  let int64InvalidValues = ['a', null, undefined, {}, () => {}]
+  let int64InvalidValues = ['a', undefined, {}, () => {}]
   let int64Values = tags.map(tag => {
     if (tag === 0) return 0
     if (tag < tags.length / 4) return randomInt(8)
@@ -127,7 +127,7 @@ describe('dev', () => {
   })
   let uint16DefaultValues = tags.map(tag => randomInt(16))
 
-  let uint32InvalidValues = [-1, Math.pow(2, 32), 'a', null, undefined, {}, () => {}]
+  let uint32InvalidValues = [-1, Math.pow(2, 32), 'a', undefined, {}, () => {}]
   let uint32Values = tags.map(tag => {
     if (tag === 0) return 0
     if (tag < tags.length / 3) return randomUInt(8)
