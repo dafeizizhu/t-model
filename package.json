@@ -1,6 +1,6 @@
 {
   "name": "t-model",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A stream model for Taf protocol",
   "main": "index.js",
   "scripts": {
